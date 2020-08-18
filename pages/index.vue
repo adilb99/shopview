@@ -37,6 +37,16 @@
 
       <h1> Welcome to iBuy! </h1>
 
+      <p v-if="$fetchState.pending">Fetching goods...</p>
+      <p v-else-if="$fetchState.error">An error occured :(</p>
+      <div v-else>
+        <h1>Product list</h1>
+        <ul v-for="good in goods" v-bind:key="good">
+          <li>{{ good.name }}</li>
+        </ul>
+        <button @click="$fetch">Refresh</button>
+      </div>
+
     </div>
     
     <nuxt />
@@ -50,8 +60,19 @@ import Sidebar from '../components/Sidebar.vue';
 export default {
   components: {
     Sidebar
+  },
+  data() {
+    return {
+      goods: []
+    }
+  },
+  async fetch() {
+    this.goods = await fetch('http://192.168.99.100:1338/api/product').then(res => res.json())
   }
+
 }
+
+
 </script>
 
 <style scoped>
