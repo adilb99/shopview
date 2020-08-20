@@ -1,6 +1,6 @@
 <template>
       <div class="sidebar">
-        <div class="sidebar-backdrop"></div>
+        <!-- <div class="sidebar-backdrop"></div> -->
         <transition name="slide">
             <div class="sidebar-panel">
                 <slot></slot>
@@ -9,17 +9,6 @@
     </div>
     </template>
     <style scoped>
-    .slide-enter-active,
-    .slide-leave-active
-    {
-        transition: transform 0.2s ease;
-    }
-
-    .slide-enter,
-    .slide-leave-to {
-        transform: translateX(-100%);
-        transition: all 150ms ease-in 0s
-    }
 
     .sidebar-backdrop {
         width: 100vw;
