@@ -21,10 +21,17 @@
                     <span class="fa fa-star"></span>
                 </div>
 
-
+                <p style="font-weight: 600; margin-top: -1em; color: orange"> {{ product.PRICE }} KZT </p>
                 <p> Category: {{ category.NAME }} </p> 
+
+                <button class="buy_button"> Add to Cart </button>
+                <button class="buy_button" style="margin-right: 1.5em;"> Buy Now </button>
+
                 <p> Produced by: {{ manufacturer.NAME }} </p>
-                <p style="color= #d0d0d0; font-size: 1em; "> {{ product.DESCR }} </p>
+                
+
+                <p style="color= #d0d0d0; font-size: 1em; "> {{ product.DESCR }} Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum </p>
+                
 
 
                 <div class="product_toggler">
@@ -43,11 +50,53 @@
                     </ul>
 
                     <div class="product_tab_body">
-                        <div v-if="isActive1">
-                            <p> {{  }} </p>
+                        <div v-if="isActive2" >
+                            <table v-for="review in reviews" v-bind:key="review" class="review_item"> 
+                                <tr> 
+                                   <td style="width: 10%; padding-top: 1.2em;"> 
+                                       <img src="https://cdn.iconscout.com/icon/free/png-512/avatar-370-456322.png" style="height: 50px; width: 50px;" />
+                                       <p style="margin-top: -0.5em; font-size: 0.7em; margin-left: 0.87em;"> user {{ review.CLIENT_ID }} </p>
+                                   </td>
+
+
+                                   <td style="padding-left: 1em;">
+                                       <h3> {{ review.TITLE }} </h3>
+                                       <p style="margin-top: -0.4em;"> {{ review.TEXT }} </p>
+                                   </td>
+
+                                </tr>
+                            </table>
                         </div>
-                        <div v-else-if="isActive2"> </div>
-                        <div v-else-if="isActive3"> </div>
+                        <div v-else-if="isActive1"> 
+                            <p> {{ product.SPEC }} </p>
+                        </div>
+                        <div v-else-if="isActive3">
+
+                            <form>
+
+                                <label for="name"> Name: </label>
+                                <input type="text" name="name"><br><br>
+
+                                <label for="email">Contact email: </label>
+                                <input type="text" name="email"><br><br>
+
+                                <label for="name">Query type: </label>
+                                <select> 
+                                    <option> Additional product info </option>
+                                    <option> Blah Blah </option>
+                                    <option> Help </option>
+                                </select>
+                                
+                                <br><br>
+
+                                <label for="name">Your Query: </label>
+                                <input type="text" name="name"><br><br>
+                                
+                                <button disabled> Submit </button>
+
+                            </form>
+
+                        </div>
                         <p v-else> An error occurred... </p>
                     </div>
                 
@@ -74,10 +123,11 @@ export default {
       product: {},
       category: {},
       manufacturer: {},
-      review: {},
+      reviews: [],
       isActive1: true,
       isActive2: false,
-      isActive3: false
+      isActive3: false,
+      author: {}
     }
   },
 
@@ -93,7 +143,7 @@ export default {
 
     this.category = await fetch(categ).then(res => res.json());
     this.manufacturer = await fetch(manuf).then(res => res.json());
-    this.review = await fetch(rev).then(res => res.json());
+    this.reviews = await fetch(rev).then(res => res.json());
 
   }
 
@@ -149,17 +199,45 @@ export default {
     font-size: 17px;
     white-space: nowrap;
     cursor: pointer;
-    color: #39b982;
+    color: black;
     text-decoration: none;
     z-index: 1;
 }
 
 .product_tab:hover {
-    border: 1px solid #e5e5e5;
+    background-color:  #fbfbfb;
 }
 
 .active {
-    background-color: #f0f0f0;
+    background-color: #f1f1f1;
+}
+
+.product_tab_body {
+    border: 1px solid #e5e5e5;
+    padding: 10px 10px 10px 10px;
+    margin-top: 6.5%;
+}
+
+
+.review_item {
+    border-bottom: 1px solid #e5e5e5;
+    width: 100%;
+}
+
+.buy_button {
+    margin-top: -1em;
+    margin-right: 1em;
+    float: right;
+    position: relative;
+    background-color: #39b982; 
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+    cursor: pointer;
 }
 
 
