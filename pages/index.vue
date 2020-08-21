@@ -6,7 +6,7 @@
      <ul class="sidebar-panel-nav" style="list-style-type:none;">
        <li> Filter items: </li>
        <li> 
-         <select @change="$fetch" v-model="selected">
+         <select @change="$fetch" v-model="select_categ">
            <option value="" selected> by Category... </option>
            <option value="phone"> SmartPhone </option>
            <option value="watch"> SmartWatch </option>
@@ -14,21 +14,25 @@
           </select> 
         </li>
 
+        <li>
+         <select @change="$fetch" v-model="select_manuf">
+           <option value="" selected> by Manufacturer... </option>
+           <option value="apple"> Apple </option>
+           <option value="samsung"> Samsung </option>
+          </select> 
+       </li>
+
+      <li> Sort items: </li>
+
        <li>
-         <select>
+         <select @change="$fetch" v-model="price_sort">
            <option value="" selected> by Price... </option>
-           <option value="expensive"> Expensive first </option>
-           <option value="cheap"> Cheap first </option>
+           <option value="desc"> Expensive first </option>
+           <option value="asc"> Cheap first </option>
           </select> 
          </li>
        
-       <li>
-         <select>
-           <option value="" selected> by Popularity... </option>
-           <option> Popular first </option>
-           <option> Unpopular first </option>
-          </select> 
-       </li>
+       
 
      </ul>
    </Sidebar>
@@ -45,13 +49,27 @@
       <p v-else-if="$fetchState.error">An error occured :(</p>
       <div v-else>
         <h3>Product list: </h3> 
-        
-        <table v-for="good in goods" v-bind:key="good" id="product_table">
-          <tr> 
-            <td> {{ good.NAME }} </td>
-            <td> {{ good }} </td>
-          </tr>
-        </table>
+
+        <div v-for="good in goods" v-bind:key="good" id="product_table">
+          <div class="product_card">  
+            
+            <div class="product_image_wrapper"> 
+              <img src='https://www.goldendealsgh.com/wp-content/uploads/2019/04/iPhone-XSmax-Gold.png' alt='smartphone' style='width: 180px; height:180px' /> 
+            </div>
+            
+            <div class="product_info_wrapper"> 
+              <p style="font-size: 1.4em;">  <nuxt-link :to="{ path: 'product', query: {id: good.ID} }"> {{ good.NAME }}</nuxt-link> &nbsp;&nbsp; <span style="color: #9c9c9c"> ({{ good.ID }}) </span> </p>
+              
+              <p style="font-weight:600; font-size: 1em; margin-top: -15px;"> {{good.PRICE}} KZT </p>
+
+              <p style="font-size: 0.8em;"> {{ good.SPEC }} </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
     </div>
@@ -77,22 +95,63 @@ export default {
     return {
       goods: [],
       counter: 0,
-      selected: ''
+      select_categ: '',
+      price_sort: '',
+      select_manuf: ''
     }
   },
 
   async fetch() {
 
-    if(this.selected == "phone"){
-      this.goods = await fetch('http://192.168.99.100:1338/api/product/categ/1').then(res => res.json());
-    } else if(this.selected == "watch") {
-      this.goods = await fetch('http://192.168.99.100:1338/api/product/categ/2').then(res => res.json());
-    } else if(this.selected == "acc") {
-      this.goods = await fetch('http://192.168.99.100:1338/api/product/categ/3').then(res => res.json());
-    } else {
-      this.goods = await fetch('http://192.168.99.100:1338/api/product').then(res => res.json());
-    }
+    let myurl = 'http://192.168.99.100:1338/api/product';
+
     
+
+    if(this.select_categ == "phone"){
+      
+      myurl += '?categ_id=1';
+
+    } else if(this.select_categ == "watch") {
+      
+      myurl += '?categ_id=2';
+
+    } else if(this.select_categ == "acc") {
+      
+      myurl += '?categ_id=3';
+
+    }
+
+    if(myurl.includes('?')) {
+      myurl += '&';
+    } else {
+      myurl += '?';
+    }
+
+    if(this.price_sort == 'asc'){
+      
+      myurl += 'price_sort=asc';
+    
+    } else if(this.price_sort == 'desc') {
+      
+      myurl += 'price_sort=desc';
+    
+    }
+
+    if(myurl.includes('?')) {
+      myurl += '&';
+    } else {
+      myurl += '?';
+    }
+
+    if(this.select_manuf == 'apple') {
+      myurl += 'manuf_id=1';
+    } else if(this.select_manuf == 'samsung') {
+      myurl += 'manuf_id=2';
+    }
+
+    
+    this.goods = await fetch(myurl).then(res => res.json());
+
   }
 
 }
@@ -111,11 +170,25 @@ export default {
   }
 
   #product_table {
-    border: 1px solid black;
+    margin-left: 50px;
   }
 
-  #product_table td {
-    border: 1px solid black;
+  .product_card {
+    position: relative;
+    float: left;
+    width: 250px;
+    height: 350px;
+    border: 1px solid #e5e5e5;
+    box-sizing: border-box;
+    padding: 10px 10px 10px;
+  }
+
+  .product_info_wrapper {
+    text-align: justify;
+  }
+
+  .product_image_wrapper {
+    text-align: center;
   }
 
   #refresh_button {
@@ -128,6 +201,7 @@ export default {
     margin-left: 200px;
     padding-left: 15px;
     background-color: #f0f0f0;
+    box-shadow: 3px 7px 7px #b9b9b9;
   }
 
 </style>
