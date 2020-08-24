@@ -5,7 +5,8 @@
           <nuxt-link to="/">Home</nuxt-link>&nbsp;|
           <nuxt-link to="/cart">My Cart</nuxt-link>&nbsp;|
           <nuxt-link to="/order">My Orders</nuxt-link>&nbsp;|
-          <nuxt-link to="/account">My Account</nuxt-link>
+          <nuxt-link to="/account">My Account</nuxt-link>&nbsp;|
+          <nuxt-link to="/login"> Log out </nuxt-link>
         </nav>
       </div>
     </template>
