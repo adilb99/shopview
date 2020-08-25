@@ -168,6 +168,8 @@ export default {
 
                 console.log(res_content);
 
+                alert('Product now added to cart!');
+
             } else {
                 const res_cart = await this.$axios.$post('http://192.168.99.100:1338/api/cart', {client_id: this.client_id});
                 const res_content = await this.$axios.$post('http://192.168.99.100:1338/api/cart_content', {
@@ -175,12 +177,20 @@ export default {
                     product_id: this.$route.query.id, 
                     quantity: 1
                 });
+                
+                this.cart_id = res_cart.id;
 
-                console.log(res_cart);
-                console.log(res_content);
+                console.log(this.cart_id);
+
+                alert('Product now added to cart!');
             }
 
-            alert('Product now added to cart!');
+            this.$router.push({name: 'cart', params: {
+                    client_id: this.$route.params.client_id,
+                    client_name: this.$route.params.client_name,
+                    cart_id: this.cart_id
+                }, query: {id: this.$route.query.id}});
+            
 
         } catch (err) {
             alert('Error: ' + err);
