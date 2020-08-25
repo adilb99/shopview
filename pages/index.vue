@@ -41,7 +41,7 @@
     <div class="main">
       
       
-      <h2> Welcome to iBuy! </h2>
+      <h2> Welcome to iBuy, {{ client_name }}! </h2>
       
       <button @click="$fetch" id="refresh_button">Refresh</button>
 
@@ -58,7 +58,7 @@
             </div>
             
             <div class="product_info_wrapper"> 
-              <p style="font-size: 1.4em;">  <nuxt-link :to="{ path: 'product', query: {id: good.ID} }"> {{ good.NAME }}</nuxt-link> &nbsp;&nbsp; <span style="color: #9c9c9c"> ({{ good.ID }}) </span> </p>
+              <p style="font-size: 1.4em;">  <nuxt-link :to="{ name: 'product', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}, query: {id: good.ID}}"> {{ good.NAME }} </nuxt-link> &nbsp;&nbsp; <span style="color: #9c9c9c"> ({{ good.ID }}) </span> </p>
               
               <p style="font-weight:600; font-size: 1em; margin-top: -15px;"> {{good.PRICE}} KZT </p>
 
@@ -97,7 +97,9 @@ export default {
       counter: 0,
       select_categ: '',
       price_sort: '',
-      select_manuf: ''
+      select_manuf: '',
+      client_id: this.$route.params.client_id,
+      client_name: this.$route.params.client_name
     }
   },
 

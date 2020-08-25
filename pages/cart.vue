@@ -7,9 +7,23 @@
 </template>
 <script>
 export default {
-    async asyncData({params, $http}) {
-    const response = await $http.$get('http://192.168.99.100:1338/api/product');
-    return { response }
+
+  data() {
+    return {
+      cart: {},
+      cart_id: this.$route.params.cart_id,
+      client_id: this.$route.params.client_id,
+      client_name: this.$route.params.client_name
+    }
+  },
+
+  async fetch() {
+    const myurl = 'http://192.168.99.100:1338/api/cart/' + this.cart_id;
+
+
+    
+
+
   }
 
 }

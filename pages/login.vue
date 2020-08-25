@@ -12,18 +12,21 @@
             
             <div class="input_container">
                 <i class="fas fa-lock" style="font-size: 2em; color: #b5b5b5"></i>
-                <input v-model="password_in" class="input_style" type="password" placeholder="Password">
+                <input v-model="password_in" @keyup.enter="$fetch" class="input_style" type="password" placeholder="Password">
             </div>
+
+            <p v-if="access == 'denied'" style="color: red;"> Invalid password or username! </p>
 
             <p> Don't have an account? <nuxt-link to="/register"> Register </nuxt-link> </p>
             
-            <button type='button' @click="$fetch" class="login_button"> LOG IN </button>
+            <button :disabled="login_in == '' || password_in == ''" type='button' @click="$fetch" class="login_button"> LOG IN </button>
             
             </form>
 
+            
+
         </LoginForm>
 
-        <p> {{ access }} </p>
 
 
     </div>
@@ -44,7 +47,7 @@ export default {
         return {
             login_in: '',
             user: {},
-            access: false, 
+            access: 'not yet', 
             password_in: '',
 
 
@@ -58,10 +61,10 @@ export default {
         this.user = await fetch(myurl).then(res => res.json());
     
         if(this.user.PASS == this.password_in){
-            this.access = true;
-            this.$router.push('/');
+            this.access = 'granted';
+            this.$router.push({name: 'index', params: {client_id: this.user.ID, client_name: this.user.FIRST_NAME}});
         } else {
-            this.access = false;
+            this.access = 'denied';
         }
 
     },
@@ -91,6 +94,15 @@ input[type="text"], input[type="password"] {
     text-decoration: none;
     font-size: 20px;
     cursor: pointer;
+}
+
+.login_button:hover {
+    background-color: #3fcf91;
+}
+
+.login_button:disabled {
+    background-color: #dddddd;
+    cursor: initial;
 }
 
 </style>

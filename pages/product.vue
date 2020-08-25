@@ -2,7 +2,7 @@
     <div>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-        <nuxt-link to='/'> <p style="float: right; font-size: 1em;"> Back </p> </nuxt-link>
+        <nuxt-link :to="{name: 'index', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}}"> <p style="float: right; font-size: 1em;"> Back </p> </nuxt-link>
         <p v-if="$fetchState.pending">Fetching goods...</p>
         <p v-else-if="$fetchState.error">An error occured :(</p>
         <div v-else>
@@ -24,7 +24,7 @@
                 <p style="font-weight: 600; margin-top: -1em; color: orange"> {{ product.PRICE }} KZT </p>
                 <p> Category: {{ category.NAME }} </p> 
 
-                <button class="buy_button"> Add to Cart </button>
+                <button class="buy_button" @click="addToCart" > Add to Cart </button>
                 <button class="buy_button" style="margin-right: 1.5em;"> Buy Now </button>
 
                 <p> Produced by: {{ manufacturer.NAME }} </p>
@@ -111,6 +111,8 @@
     </div>
 </template>
 <script>
+import axios from '@nuxtjs/axios';
+
 export default {
   modules: ['@nuxt/http'],
 
@@ -127,7 +129,10 @@ export default {
       isActive1: true,
       isActive2: false,
       isActive3: false,
-      author: {}
+      author: {},
+      client_id: this.$route.params.client_id,
+      client_name: this.$route.params.client_name,
+      cart_id: this.$route.params.cart_id
     }
   },
 
@@ -144,6 +149,51 @@ export default {
     this.category = await fetch(categ).then(res => res.json());
     this.manufacturer = await fetch(manuf).then(res => res.json());
     this.reviews = await fetch(rev).then(res => res.json());
+
+  },
+
+  methods: {
+      addToCart: async function() {
+          
+        // Creating cart
+
+        try {
+            if(this.cart_id){
+            
+                const res_content = await this.$axios.$post('http://192.168.99.100:1338/api/cart_content', {
+                    cart_id: this.cart_id, 
+                    product_id: this.$route.query.id, 
+                    quantity: 1
+                });
+
+                console.log(res_content);
+
+            } else {
+                const res_cart = await this.$axios.$post('http://192.168.99.100:1338/api/cart', {client_id: this.client_id});
+                const res_content = await this.$axios.$post('http://192.168.99.100:1338/api/cart_content', {
+                    cart_id: res_cart.id, 
+                    product_id: this.$route.query.id, 
+                    quantity: 1
+                });
+
+                console.log(res_cart);
+                console.log(res_content);
+            }
+
+            alert('Product now added to cart!');
+
+        } catch (err) {
+            alert('Error: ' + err);
+        }
+        
+        
+
+
+      },
+
+      buyNow: async function() {
+        
+      },
 
   }
 
@@ -238,6 +288,10 @@ export default {
     display: block;
     font-size: 15px;
     cursor: pointer;
+}
+
+.buy_button:hover {
+    background-color: #3fcf91;
 }
 
 

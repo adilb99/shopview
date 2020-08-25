@@ -2,10 +2,10 @@
       <div class="nav">
         <nuxt-link to="/" class="brand">iBuy</nuxt-link>
         <nav>
-          <nuxt-link to="/">Home</nuxt-link>&nbsp;|
-          <nuxt-link to="/cart">My Cart</nuxt-link>&nbsp;|
-          <nuxt-link to="/order">My Orders</nuxt-link>&nbsp;|
-          <nuxt-link to="/account">My Account</nuxt-link>&nbsp;|
+          <nuxt-link :to="{name: 'index', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}}">Home</nuxt-link>&nbsp;|
+          <nuxt-link :to="{name: 'cart', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}}">My Cart</nuxt-link>&nbsp;|
+          <nuxt-link :to="{name: 'order', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}}">My Orders</nuxt-link>&nbsp;|
+          <nuxt-link :to="{name: 'account', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}}">My Account</nuxt-link>&nbsp;|
           <nuxt-link to="/login"> Log out </nuxt-link>
         </nav>
       </div>
