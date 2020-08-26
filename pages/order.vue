@@ -30,6 +30,7 @@
         
         <div class='main'>
             <h3> MY ORDERS </h3>
+            <p v-if="orders.length == 0" style="font-size: 2em; text-align: center; margin-top: 200px;"> Nothing here yet... </p>
             <p v-if="$fetchState.pending"> Fetching info... </p>
             <p v-else-if="$fetchState.error"> An error occurred :( </p>
             <div v-else> 

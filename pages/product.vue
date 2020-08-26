@@ -51,6 +51,38 @@
 
                     <div class="product_tab_body">
                         <div v-if="isActive2" >
+
+                            <button class="collapsible" v-bind:class="{opened: isOpened}" @click="openCollapsible"> Leave your review: </button>
+                            <div class="my_review" v-bind:class="{my_review_opened: isOpened}">
+                                <label> Title: </label>
+                                <input type="text" class='my_review_input' placeholder="Your title here..." v-model="myreview_title">
+
+                                <label> Text: </label>
+                                <textarea class='my_review_textarea' placeholder="Your review here..." v-model="myreview_text" />
+                                
+                                <label> Your rating: </label>
+                                <div class="review_rating">
+                                    
+                                    <fieldset class="rating">
+                                        <input type="radio" v-model="myreview_rating" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star4half" name="rating" value="4.5" /><label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star3half" name="rating" value="3.5" /><label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star2half" name="rating" value="2.5" /><label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star1half" name="rating" value="1.5" /><label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+                                        <input type="radio" v-model="myreview_rating" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+                                        <input type="radio" v-model="myreview_rating" id="starhalf" name="rating" value="0.5" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+                                    </fieldset>
+                                    
+                                </div>
+
+
+                                <button type="button" :disabled="myreview_title == '' || myreview_text == ''" @click="leaveReview" class="review_button"> Submit </button>
+
+                            </div>
+
                             <table v-for="review in reviews" v-bind:key="review" class="review_item"> 
                                 <tr> 
                                    <td style="width: 10%; padding-top: 1.2em;"> 
@@ -60,6 +92,7 @@
 
 
                                    <td style="padding-left: 1em;">
+                                       <span v-if="review.CLIENT_ID == client_id" class="delete_review_button"> X </span>
                                        <h3> {{ review.TITLE }} </h3>
                                        <p style="margin-top: -0.4em;"> {{ review.TEXT }} </p>
                                    </td>
@@ -132,7 +165,11 @@ export default {
       author: {},
       client_id: this.$route.params.client_id,
       client_name: this.$route.params.client_name,
-      cart_id: this.$route.params.cart_id
+      cart_id: this.$route.params.cart_id,
+      myreview_title: '',
+      myreview_text: '',
+      myreview_rating: 0.5,
+      isOpened: false
     }
   },
 
@@ -149,6 +186,8 @@ export default {
     this.category = await fetch(categ).then(res => res.json());
     this.manufacturer = await fetch(manuf).then(res => res.json());
     this.reviews = await fetch(rev).then(res => res.json());
+
+    this.reviews.reverse();
 
   },
 
@@ -205,12 +244,58 @@ export default {
         
       },
 
+      leaveReview: async function() {
+          
+          const url = 'http://192.168.99.100:1338/api/review';
+
+          try{
+              const response = await this.$axios.post(url, {
+                client_id: this.client_id,
+                product_id: this.product.ID,
+                title: this.myreview_title,
+                text: this.myreview_text,
+                rating: this.myreview_rating
+            });
+
+              if(response.status == 201){
+                  this.$fetch();
+              } else {
+                  alert('Something went wrong...');
+              }
+
+          } catch(err){
+              alert(err);
+          }
+
+
+      },
+
+      openCollapsible: function() {
+          this.isOpened = !this.isOpened;
+      }
+
   }
 
 }
 
 </script>
 <style scoped>
+
+.collapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.opened, .collapsible:hover {
+  background-color: #ccc;
+}
 
 .product_image {
     position: relative;
@@ -281,6 +366,7 @@ export default {
 
 .review_item {
     border-bottom: 1px solid #e5e5e5;
+    word-break: break-all;
     width: 100%;
 }
 
@@ -304,5 +390,112 @@ export default {
     background-color: #3fcf91;
 }
 
+.collapsible:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: white;
+  float: right;
+  margin-left: 5px;
+}
+
+.opened:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+.my_review {
+    border: 1px solid #e5e5e5;
+    box-shadow: 3px 7px 7px #b9b9b9;;
+    margin-top: 0em;
+    padding: 10px 10px 10px 10px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+
+.my_review_opened {
+    display: block;
+}
+
+.my_review_input {
+    margin-bottom: 1em;
+}
+
+.my_review_textarea {
+    margin-bottom: 1em;
+    resize: none;
+    height: 200px;
+}
+
+.review_button {
+    background-color: #39b982; 
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    cursor: pointer;
+    float: right;
+    margin-right: 20px;
+    margin-top: -60px;
+}
+
+.review_button:hover {
+    background-color: #3fcf91;
+}
+
+.review_button:disabled {
+    background-color: #dddddd;
+    cursor: initial;
+}
+
+.delete_review_button {
+    cursor: pointer;
+    color: red;
+    float: right;
+    margin-bottom: -1em;
+}
+
+.delete_review_button:hover {
+    color: rgb(255, 96, 96);
+}
+
+/* star rating */
+
+.rating { 
+  border: none;
+  display: inline-block;
+}
+
+.rating > input { display: none; } 
+.rating > label:before { 
+  margin: 5px;
+  font-size: 1.25em;
+  font-family: FontAwesome;
+  display: inline-block;
+  content: "\f005";
+  cursor: pointer;
+}
+
+.rating > .half:before { 
+  content: "\f089";
+  position: absolute;
+}
+
+.rating > label { 
+  color: #ddd; 
+    float: right;
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.rating > input:checked ~ label, /* show gold star when clicked */
+.rating:not(:checked) > label:hover, /* hover current star */
+.rating:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+
+.rating > input:checked + label:hover, /* hover current star when changing rating */
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label, /* lighten current selection */
+.rating > input:checked ~ label:hover ~ label { color: #FFED85;  } 
 
 </style>
