@@ -9,35 +9,36 @@
         <p style="font-size: 1.11em; font-weight: 700; margin-bottom: 0.4em; margin-left: 0.7em;"> Fill in your address </p>
 
         <label class="side_label"> Country </label>
-        <input class="side_input" type="text">
+        <input v-model="country" class="side_input" type="text">
 
         <label class="side_label"> State/Province </label>
-        <input class="side_input" type="text">
+        <input v-model="state" class="side_input" type="text">
 
         <label class="side_label"> City </label>
-        <input class="side_input" type="text">
+        <input v-model="city" class="side_input" type="text">
 
         <label class="side_label"> Street </label>
-        <input class="side_input" type="text">
+        <input v-model="street" class="side_input" type="text">
 
         <label class="side_label"> House </label>
-        <input class="side_input" type="text">
+        <input v-model="house" class="side_input" type="text">
 
         <label class="side_label"> ZIP </label>
-        <input class="side_input" type="text">
+        <input v-model="ZIP" class="side_input" type="text">
 
-        <button type="button" class="buy_button"> To Checkout </button>
+        <button :disabled="country == '' || state == '' || city == '' || street == '' || house == '' || ZIP == '' || goods.length == 0" @click="submitOrder" type="button" class="buy_button"> To Checkout </button>
       </form>    
     </Sidebar>
     
       <p v-if="$fetchState.pending">Fetching cart contents...</p>
       <p v-else-if="$fetchState.error">An error occured :(</p>
       <div v-else class="cart_list_div">
+        <p v-if="goods.length == 0" style="font-size: 2em; text-align: center; margin-top: 200px;"> Nothing here yet... </p>
         <table v-for="good in goods" v-bind:key="good" class="cart_list_table"> 
           <tr class="cart_entry"> 
             <td> <img src='https://www.goldendealsgh.com/wp-content/uploads/2019/04/iPhone-XSmax-Gold.png' alt='smartphone' style='width: 200px; height:200px;' /> </td>
             <td> 
-              <span class="delete_button"> X </span>
+              <span class="delete_button" @click="deleteFromCart(good.CART_CONTENT_ID)"> X </span>
               <p style="font-size: 1.3em;"> 
                 <nuxt-link :to="{ name: 'product', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}, query: {id: good.ID}}">{{ good.NAME }}</nuxt-link> 
                 &nbsp;&nbsp; <span style="color: #aeaeae"> ({{ good.ID }}) </span> 
@@ -68,7 +69,13 @@ export default {
       cart_id: this.$route.params.cart_id,
       client_id: this.$route.params.client_id,
       client_name: this.$route.params.client_name,
-      total: 0
+      total: 0,
+      country: '',
+      state: '',
+      city: '',
+      street: '',
+      house: '',
+      ZIP: ''
     }
   },
 
@@ -87,7 +94,7 @@ export default {
         
         const good = await fetch('http://192.168.99.100:1338/api/product/' + element.PRODUCT_ID).then(res => res.json());
 
-        this.goods.push(Object.assign({}, good, {QUANTITY: element.QUANTITY}));
+        this.goods.push(Object.assign({}, good, {QUANTITY: element.QUANTITY, CART_CONTENT_ID: element.ID}));
 
         this.total += good.PRICE * element.QUANTITY;
       }
@@ -98,6 +105,86 @@ export default {
     
 
   },
+
+  methods: {
+    deleteFromCart: async function(content_id) {
+      const myurl = 'http://192.168.99.100:1338/api/cart_content/' + content_id;
+
+      try {
+
+        const response = await this.$axios.delete(myurl);
+
+        console.log(response);
+        
+        for (let i = 0; i < this.cart.length; i++) {
+          const element = this.cart[i];
+          
+          if(element.ID == content_id){
+            this.cart.splice(i, 1);
+            break;
+          }
+
+        }
+
+        for (let i = 0; i < this.goods.length; i++) {
+          const element = this.goods[i];
+
+          if(element.CART_CONTENT_ID == content_id){
+            this.goods.splice(i, 1);
+            this.total -= element.PRICE;
+            break;
+          }
+          
+        }
+
+      } catch(err) {
+        alert(err);
+
+      }
+
+
+
+    },
+
+    submitOrder: async function() {
+      
+      const url = 'http://192.168.99.100:1338/api/ord';
+
+      try {
+
+        const response = await this.$axios.post(url, {
+          cart_id: this.cart_id,
+          country: this.country,
+          province_state: this.state,
+          city: this.city,
+          street: this.street,
+          house_no: this.house,
+          zip: this.ZIP
+        });
+
+        if(response.status == 201){
+          this.goods = [];
+          this.cart = [];
+          this.total = 0;
+
+          alert('Transaction succesful!');
+
+          this.$router.push({name: 'order', params: {client_id: this.$route.params.client_id, client_name: this.$route.params.client_name, cart_id: null}});
+
+        } else {
+          alert('Error: Something went wrong, try again later...')
+        }
+
+        
+      } catch(err){
+        alert(err);
+      }
+
+    }
+
+
+
+  }
 
 }
 </script>
@@ -134,6 +221,11 @@ export default {
 
 .buy_button:hover {
   background-color: #3fcf91;
+}
+
+.buy_button:disabled {
+    background-color: #dddddd;
+    cursor: initial;
 }
 
 .cart_list_table {

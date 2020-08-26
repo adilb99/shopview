@@ -32,7 +32,9 @@
           </select> 
          </li>
        
-       
+       <li> 
+         <p @click="clearSelects" class="clear_button"> Clear </p>
+       </li>
 
      </ul>
    </Sidebar>
@@ -156,6 +158,15 @@ export default {
     
     this.goods = await fetch(myurl).then(res => res.json());
 
+  },
+
+  methods: {
+    clearSelects: function(){
+      this.select_categ = "";
+      this.select_manuf = "";
+      this.price_sort = "";
+      this.$fetch();
+    }
   }
 
 }
@@ -206,6 +217,15 @@ export default {
     padding-left: 15px;
     background-color: #f0f0f0;
     box-shadow: 3px 7px 7px #b9b9b9;
+  }
+
+  .clear_button {
+    cursor: pointer;
+    color: gray;
+  }
+
+  .clear_button:hover {
+    color: rgb(180, 180, 180);
   }
 
 </style>
