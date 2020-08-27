@@ -53,7 +53,7 @@
                         <div v-if="isActive2" >
 
                             <button class="collapsible" v-bind:class="{opened: isOpened}" @click="openCollapsible"> Leave your review: </button>
-                            <div class="my_review" v-bind:class="{my_review_opened: isOpened}">
+                            <div class="my_review" v-bind:class="{my_review_collapsed: isOpened}">
                                 <label> Title: </label>
                                 <input type="text" class='my_review_input' placeholder="Your title here..." v-model="myreview_title">
 
@@ -172,7 +172,7 @@ export default {
       myreview_title: '',
       myreview_text: '',
       myreview_rating: 0.5,
-      isOpened: false
+      isOpened: true
     }
   },
 
@@ -359,7 +359,7 @@ export default {
 
 
 .collapsible {
-  background-color: #eee;
+  background-color: #ccc;
   color: #444;
   cursor: pointer;
   padding: 18px;
@@ -370,7 +370,7 @@ export default {
   font-size: 15px;
 }
 
-.opened, .collapsible:hover {
+ .collapsible:hover {
   background-color: #ccc;
 }
 
@@ -468,15 +468,20 @@ export default {
 }
 
 .collapsible:after {
-  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  content: '\2796'; /* Unicode character for "plus" sign (-) */
+}
+
+
+.opened {
+  background-color: #eee;
+}
+
+.opened:after {
+  content: "\02795"; /* Unicode character for "minus" sign (+ ) */
   font-size: 13px;
   color: white;
   float: right;
   margin-left: 5px;
-}
-
-.opened:after {
-  content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
 
 .my_review {
@@ -484,13 +489,19 @@ export default {
     box-shadow: 3px 7px 7px #b9b9b9;;
     margin-top: 0em;
     padding: 10px 10px 10px 10px;
-    display: none;
+    display: block;
     overflow: hidden;
     background-color: #f1f1f1;
+    max-height: 600px;
+    -webkit-transition: max-height 0.7s ease-out, padding 0.7s;
+    transition: max-height 0.7s ease-out, padding 0.7s;
 }
 
-.my_review_opened {
-    display: block;
+.my_review_collapsed {
+    max-height: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    box-shadow: 0px 0px 0px white;
 }
 
 .my_review_input {

@@ -71,16 +71,15 @@
               <p style="font-size: 1.4em;">  <nuxt-link :to="{ name: 'product', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}, query: {id: good.ID}}"> {{ good.NAME }} </nuxt-link> &nbsp;&nbsp; <span style="color: #9c9c9c"> ({{ good.ID }}) </span> </p>
               
               <p style="font-weight:600; font-size: 1em; margin-top: -15px;"> {{good.PRICE}} KZT 
+              </p>
 
-                <div class="star_rating"> 
+              <div class="star_rating"> 
                     <span class="fa fa-star" v-bind:class="{checked: getScore1(good.RATING)}"></span>
                     <span class="fa fa-star" v-bind:class="{checked: getScore2(good.RATING)}"></span>
                     <span class="fa fa-star" v-bind:class="{checked: getScore3(good.RATING)}"></span>
                     <span class="fa fa-star" v-bind:class="{checked: getScore4(good.RATING)}"></span>
                     <span class="fa fa-star" v-bind:class="{checked: getScore5(good.RATING)}"></span>
                 </div>
-
-              </p>
               
               <p style="font-size: 0.8em;"> {{ good.SPEC }} </p>
 
@@ -168,6 +167,22 @@ export default {
       myurl += '?';
     }
 
+    if(this.rating_sort == 'asc'){
+      
+      myurl += 'rating_sort=asc';
+    
+    } else if(this.rating_sort == 'desc') {
+      
+      myurl += 'rating_sort=desc';
+    
+    }
+
+    if(myurl.includes('?')) {
+      myurl += '&';
+    } else {
+      myurl += '?';
+    }
+
     if(this.select_manuf == 'apple') {
       myurl += 'manuf_id=1';
     } else if(this.select_manuf == 'samsung') {
@@ -184,6 +199,7 @@ export default {
       this.select_categ = "";
       this.select_manuf = "";
       this.price_sort = "";
+      this.rating_sort = "";
       this.$fetch();
     },
 
