@@ -50,11 +50,11 @@
                                     <br>   
 
                                     <div style="padding-left: 1em; display: inline"> 
-                                        <span class="fa fa-star checked"></span>
-                                        <span class="fa fa-star checked"></span>
-                                        <span class="fa fa-star checked"></span>
-                                        <span class="fa fa-star"></span>
-                                        <span class="fa fa-star"></span>
+                                        <span class="fa fa-star" v-bind:class="{checked: getScore1(product.RATING)}"></span>
+                                        <span class="fa fa-star" v-bind:class="{checked: getScore2(product.RATING)}"></span>
+                                        <span class="fa fa-star" v-bind:class="{checked: getScore3(product.RATING)}"></span>
+                                        <span class="fa fa-star" v-bind:class="{checked: getScore4(product.RATING)}"></span>
+                                        <span class="fa fa-star" v-bind:class="{checked: getScore5(product.RATING)}"></span>
                                     </div>
 
                                     <br>
@@ -173,7 +173,51 @@ export default {
             this.orders = [];
             this.$fetch();
 
+        },
+
+        getScore1: function(rating){
+        if(rating > 0.5) {
+            return true;
+        } else {
+            return false;
         }
+        },
+
+        getScore2: function(rating){
+        if(rating>1.5){
+            return true;
+        } else {
+            return false;
+        }
+        },
+
+
+        getScore3: function(rating){
+        if(rating>2.5){
+            return true;
+        } else {
+            return false;
+        }
+        },
+
+
+        getScore4: function(rating){
+        if(rating>3.5){
+            return true;
+        } else {
+            return false;
+        }
+        },
+
+        getScore5: function(rating){
+        if(rating>4.5){
+            return true;
+        } else {
+            return false;
+        }
+        },
+
+
     }
 }
 </script>
@@ -205,15 +249,6 @@ option[value=""][selected] {
 
   .clear_button:hover {
     color: rgb(180, 180, 180);
-  }
-
-
-  .fa-star {
-      cursor: pointer;
-  }
-
-  .fa-star:hover {
-      color: orange;
   }
 
   .checked {

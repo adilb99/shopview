@@ -14,11 +14,11 @@
                 <p style="font-size: 2em;"> {{ product.NAME }} </p>
                 
                 <div class="star_rating"> 
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star"></span>
-                    <span class="fa fa-star"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore1(product.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore2(product.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore3(product.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore4(product.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore5(product.RATING)}"></span>
                 </div>
 
                 <p style="font-weight: 600; margin-top: -1em; color: orange"> {{ product.PRICE }} KZT </p>
@@ -92,8 +92,11 @@
 
 
                                    <td style="padding-left: 1em;">
-                                       <span v-if="review.CLIENT_ID == client_id" class="delete_review_button"> X </span>
-                                       <h3> {{ review.TITLE }} </h3>
+                                       <span v-if="review.CLIENT_ID == client_id" @click="deleteReview(review.ID)" class="delete_review_button"> X </span>
+                                       <br>
+                                       <h3 style="display: inline;"> {{ review.TITLE }} </h3> 
+                                       <span class="review_score_card"> SCORE: {{ review.RATING }} </span>
+                                       <br> <br>
                                        <p style="margin-top: -0.4em;"> {{ review.TEXT }} </p>
                                    </td>
 
@@ -272,7 +275,69 @@ export default {
 
       openCollapsible: function() {
           this.isOpened = !this.isOpened;
+      },
+
+      deleteReview: async function(rev_id) {
+          
+          const myurl = 'http://192.168.99.100:1338/api/review/' + rev_id;
+
+          try {
+            const response = await this.$axios.delete(myurl);
+            
+            if(response.status == 204) {
+                this.$fetch();
+            } else {
+                alert('Something went wrong: ' + response);
+            }
+
+
+          } catch(err) {
+            alert(err);
+          }
+
+      },
+
+      getScore1: function(rating){
+      if(rating > 0.5) {
+        return true;
+      } else {
+        return false;
       }
+    },
+
+    getScore2: function(rating){
+      if(rating>1.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+
+    getScore3: function(rating){
+      if(rating>2.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+
+    getScore4: function(rating){
+      if(rating>3.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    getScore5: function(rating){
+      if(rating>4.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
 
   }
 
@@ -280,6 +345,18 @@ export default {
 
 </script>
 <style scoped>
+
+.review_score_card { 
+    margin-left: 15px;
+    background: #51b388;
+    padding: 3px 3px 3px 3px;
+    color: white;
+    font-size: 0.75em;
+    display: inline-block;
+    position: relative;
+    top: -5px;
+}
+
 
 .collapsible {
   background-color: #eee;
@@ -453,11 +530,12 @@ export default {
     cursor: pointer;
     color: red;
     float: right;
-    margin-bottom: -1em;
+    margin-right: 0.5em;
+    margin-top: 0.7em;
 }
 
 .delete_review_button:hover {
-    color: rgb(255, 96, 96);
+    color: rgb(255, 138, 138);
 }
 
 /* star rating */

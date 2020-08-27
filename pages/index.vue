@@ -32,6 +32,14 @@
           </select> 
          </li>
        
+        <li>
+          <select @change="$fetch" v-model="rating_sort">
+            <option value="" selected> by Rating... </option>
+            <option value="desc"> High rating first </option>
+            <option value="asc"> Low rating first </option>
+          </select>
+        </li>
+
        <li> 
          <p @click="clearSelects" class="clear_button"> Clear </p>
        </li>
@@ -62,8 +70,18 @@
             <div class="product_info_wrapper"> 
               <p style="font-size: 1.4em;">  <nuxt-link :to="{ name: 'product', params: {client_id: $route.params.client_id, client_name: $route.params.client_name, cart_id: $route.params.cart_id}, query: {id: good.ID}}"> {{ good.NAME }} </nuxt-link> &nbsp;&nbsp; <span style="color: #9c9c9c"> ({{ good.ID }}) </span> </p>
               
-              <p style="font-weight:600; font-size: 1em; margin-top: -15px;"> {{good.PRICE}} KZT </p>
+              <p style="font-weight:600; font-size: 1em; margin-top: -15px;"> {{good.PRICE}} KZT 
 
+                <div class="star_rating"> 
+                    <span class="fa fa-star" v-bind:class="{checked: getScore1(good.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore2(good.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore3(good.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore4(good.RATING)}"></span>
+                    <span class="fa fa-star" v-bind:class="{checked: getScore5(good.RATING)}"></span>
+                </div>
+
+              </p>
+              
               <p style="font-size: 0.8em;"> {{ good.SPEC }} </p>
 
             </div>
@@ -102,8 +120,9 @@ export default {
       select_categ: '',
       price_sort: '',
       select_manuf: '',
+      rating_sort: '',
       client_id: this.$route.params.client_id,
-      client_name: this.$route.params.client_name
+      client_name: this.$route.params.client_name,
     }
   },
 
@@ -166,7 +185,50 @@ export default {
       this.select_manuf = "";
       this.price_sort = "";
       this.$fetch();
-    }
+    },
+
+    getScore1: function(rating){
+      if(rating > 0.5) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    getScore2: function(rating){
+      if(rating>1.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+
+    getScore3: function(rating){
+      if(rating>2.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+
+    getScore4: function(rating){
+      if(rating>3.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    getScore5: function(rating){
+      if(rating>4.5){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
   }
 
 }
@@ -222,10 +284,21 @@ export default {
   .clear_button {
     cursor: pointer;
     color: gray;
+    display: inline;
   }
 
   .clear_button:hover {
     color: rgb(180, 180, 180);
+  }
+
+  .star_rating {
+    float: right;
+    margin-top: -40px;
+    margin-right: 10px;
+  }
+
+  .checked {
+    color: orange;
   }
 
 </style>
