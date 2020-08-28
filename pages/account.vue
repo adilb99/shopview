@@ -24,8 +24,8 @@
                         <p style="border-bottom: 1px dotted gray"> <span class="user_info"> FIRST NAME: </span> <span class="user_info2"> {{ client.FIRST_NAME }} </span> </p>
                         <p style="border-bottom: 1px dotted gray"> <span class="user_info"> SECOND NAME: </span> <span class="user_info2"> {{ client.SECOND_NAME }} </span> </p>
 
-                        <p style="border-bottom: 1px dotted gray"> <span class="user_info"> E-MAIL: </span> <span class="user_info2"> {{ client.EMAIL }} </span > <span @click="openModal"><i class="fas fa-pencil-alt"></i></span> </p> 
-                        <p style="border-bottom: 1px dotted gray"> <span class="user_info"> PHONE NUMBER: </span> <span class="user_info2"> {{ client.PHONE_NUM }} </span> <span @click="openModal"><i class="fas fa-pencil-alt"></i></span> </p>
+                        <p style="border-bottom: 1px dotted gray"> <span class="user_info"> E-MAIL: </span> <span class="user_info2"> {{ client.EMAIL }} </span > <span @click="openModal('email')"><i class="fas fa-pencil-alt"></i></span> </p> 
+                        <p style="border-bottom: 1px dotted gray"> <span class="user_info"> PHONE NUMBER: </span> <span class="user_info2"> {{ client.PHONE_NUM }} </span> <span @click="openModal('phone')"><i class="fas fa-pencil-alt"></i></span> </p>
                         <p style="border-bottom: 1px dotted gray"> <span class="user_info"> BIRTH DATE: </span> <span class="user_info2"> {{ client.BIRTH_DATE }} </span> </p>
 
 
@@ -55,12 +55,14 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <span @click="openModal" class="close">&times;</span>
-                        <h2> Email change </h2>
+                        <h2 v-if="modal_state == 'email'"> Email Change </h2>
+                        <h2 v-if="modal_state == 'phone'"> Phone Number Change </h2>
                     </div>
                     <div class="modal-body">
-                        <p> Please, enter a new email: </p>
-                        <input v-model="new_email" type="text" style="margin-bottom: 1em;">
-                        <button :disabled="new_email == ''" type="button" class="submit_button"> Submit </button>
+                        <p v-if="modal_state == 'email'"> Please, enter a new email: </p>
+                        <p v-if="modal_state == 'phone'"> Please, enter a new phone number: </p>
+                        <input v-model="new_info" type="text" style="margin-bottom: 1em;">
+                        <button :disabled="new_info == ''" type="button" @click="updateInfo" class="submit_button"> Submit </button>
                     </div>
                 </div>
 
@@ -82,7 +84,8 @@ export default {
             client_name: this.$route.params.client_name,
             client: {},
             isOpenedModal: false,
-            new_email: ''
+            new_info: '',
+            modal_state: ''
         }
     },
 
@@ -95,13 +98,73 @@ export default {
     },
     
     methods: {
-        openModal: function() {
+        openModal: function(state) {
+            
+            if(state == 'email'){
+                this.modal_state = 'email';
+            } else if (state == 'phone') {
+                this.modal_state = 'phone';
+            }
+            
+            
             this.isOpenedModal = !this.isOpenedModal;
 
             console.log(this.isOpenedModal);
 
 
+        },
+
+        updateInfo: async function() {
+
+            const myurl = 'http://192.168.99.100:1338/api/client/' + this.client_id;
+            let response;
+            try {
+
+                if(this.modal_state == 'email'){
+                     response = await this.$axios.put(myurl, {
+                        first_name: this.client.FIRST_NAME,
+                        second_name: this.client.SECOND_NAME,
+                        login: this.client.LOGIN,
+                        pass: this.client.PASS,
+                        email: this.new_info,
+                        phone_num: this.client.PHONE_NUM,
+                        birth_date: this.client.BIRTH_DATE.split('T')[0].replaceAll('-', '/')
+                    });
+
+                } else if (this.modal_state == 'phone') {
+                     response = await this.$axios.put(myurl, {
+                        first_name: this.client.FIRST_NAME,
+                        second_name: this.client.SECOND_NAME,
+                        login: this.client.LOGIN,
+                        pass: this.client.PASS,
+                        email: this.client.EMAIL,
+                        phone_num: this.new_info,
+                        birth_date: this.client.BIRTH_DATE.split('T')[0].replaceAll('-', '/')
+                    });
+
+                }
+
+
+                if(response.status == 200){
+                    this.isOpenedModal = !this.isOpenedModal;
+                    this.new_info = '';
+                    this.$fetch();
+                } else {
+                    this.new_info = '';
+                    this.isOpenedModal = !this.isOpenedModal;
+                    alert('something went wrong...');
+                }
+
+
+            } catch(err) {
+                alert(err);
+            }
+            
+
+
         }
+
+
     }
 
 }
