@@ -6,7 +6,8 @@ This is a personal project I made during my internship of Summer 2020. It is a w
 It also features server side **rendering** supported by NuxtJS
 
 <br>
-## Technology Stack
+
+### Technology Stack
 
 **NuxtJS** (VueJS + NodeJS + WebPack based framework) was used to build the layout and functionality of this website
 <br>
